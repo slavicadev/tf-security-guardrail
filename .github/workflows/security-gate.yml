@@ -1,0 +1,41 @@
+name: DevSecOps AI Plan Guardrail
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  ia-security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        pip install google-genai pydantic
+        
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_wrapper: false
+
+    - name: Terraform Plan Generation
+      run: |
+        terraform init
+        terraform plan -out=tfplan.binary
+        terraform show -json tfplan.binary > plan.json
+
+    - name: Run Gemini AI Security Audit
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
+      run: |
+        python scan_plan.py

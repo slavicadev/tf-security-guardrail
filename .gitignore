@@ -1,0 +1,15 @@
+# Ignore local python virtual environments
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Ignore local Terraform state and binaries
+.terraform/
+*.tfstate
+*.tfstate.backup
+tfplan.binary
+plan.json
+
+# Ignore local environment variables / API keys
+.env
